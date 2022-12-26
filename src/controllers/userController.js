@@ -23,7 +23,7 @@ let handleLogin = async (req, res) => {
 }
 
 let handleGetAllUser = async (req, res) => {
-    let id = req.body.id;//ALL,id
+    let id = req.query.id;//ALL,id
     if (!id) {
         return res.status(200).json({
             errCode: 1,
