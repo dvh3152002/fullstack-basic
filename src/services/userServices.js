@@ -1,6 +1,5 @@
 import db from "../models/index";
 import bcrypt from "bcryptjs";
-import e from "express";
 
 const salt = bcrypt.genSaltSync(10);
 
@@ -22,7 +21,7 @@ let handleUserLogin = (email, password) => {
             let isExist = await checkUserEmail(email);
             if (isExist) {
                 let user = await db.User.findOne({
-                    attributes: ['email', 'password', 'roleId'],
+                    attributes: ['email', 'password', 'roleId', 'firstName', 'lastName'],
                     where: { email: email },
                     raw: true
                 })
