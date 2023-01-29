@@ -75,8 +75,43 @@ let saveInforDoctorService = (data) => {
     })
 }
 
+let getDetailsDoctorService = (id) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            if (!id) {
+                resolve({
+                    errCode: 1,
+                    errMessage: "Missing parameters"
+                })
+            } else {
+                let data = await db.User.findOne({
+                    where: {
+                        id: id
+                    },
+                    include: [
+                        { model: db.Allcode, as: 'positionData', attributes: ['valueVi', 'valueEn'] },
+                        { model: db.Markdown, attributes: ['description', 'contentHTML', 'contentMarkdown'] }
+                    ],
+                    attributes: {
+                        exclude: ['password', 'image']
+                    },
+                    raw: true,
+                    nest: true
+                })
+                resolve({
+                    errCode: 0,
+                    data: data
+                })
+            }
+        } catch (error) {
+            reject(error);
+        }
+    })
+}
+
 module.exports = {
     getTopDoctorHome: getTopDoctorHome,
     getAllDoctors: getAllDoctors,
-    saveInforDoctorService: saveInforDoctorService
+    saveInforDoctorService: saveInforDoctorService,
+    getDetailsDoctorService: getDetailsDoctorService
 }
