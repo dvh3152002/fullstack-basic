@@ -93,11 +93,17 @@ let getDetailsDoctorService = (id) => {
                         { model: db.Markdown, attributes: ['description', 'contentHTML', 'contentMarkdown'] }
                     ],
                     attributes: {
-                        exclude: ['password', 'image']
+                        exclude: ['password']
                     },
-                    raw: true,
+                    raw: false,
                     nest: true
                 })
+                if (data && data.image) {
+                    data.image = new Buffer.from(data.image, 'base64').toString('binary');
+                }
+                if (!data) {
+                    data = {}
+                }
                 resolve({
                     errCode: 0,
                     data: data
