@@ -1,5 +1,5 @@
 import db from "../models";
-import _ from 'lodash';
+import _, { reject } from 'lodash';
 require('dotenv').config();
 
 const MAX_SCHEDULE_NUMBER = process.env.MAX_SCHEDULE_NUMBER;
@@ -169,8 +169,6 @@ let bulkCreateSchedule = (data) => {
                     return a.timeType === b.timeType && a.date === b.date
                 })
 
-                console.log('check to create', toCreate)
-
                 //create data
                 if (toCreate && toCreate.length > 0) {
                     await db.Schedule.bulkCreate(toCreate)
@@ -187,10 +185,44 @@ let bulkCreateSchedule = (data) => {
     })
 }
 
+let getDateSchedule = (doctorId, date) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            if (!doctorId || !date) {
+                resolve({
+                    errCode: 1,
+                    errMessage: 'Missing parameter'
+                })
+            } else {
+                date = new Date(date / 1);
+                let data = await db.Schedule.findAll({
+                    where: {
+                        doctorId: doctorId,
+                        date: date
+                    }
+                })
+
+                data.map(item => {
+                    item.date = item.date.getTime();
+                    return item;
+                })
+
+                resolve({
+                    errCode: 0,
+                    data: data
+                })
+            }
+        } catch (error) {
+            reject(error);
+        }
+    })
+}
+
 module.exports = {
     getTopDoctorHome: getTopDoctorHome,
     getAllDoctors: getAllDoctors,
     saveInforDoctorService: saveInforDoctorService,
     getDetailsDoctorService: getDetailsDoctorService,
-    bulkCreateSchedule: bulkCreateSchedule
+    bulkCreateSchedule: bulkCreateSchedule,
+    getDateSchedule: getDateSchedule,
 }
