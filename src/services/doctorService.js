@@ -137,7 +137,18 @@ let getDetailsDoctorService = (id) => {
                     },
                     include: [
                         { model: db.Allcode, as: 'positionData', attributes: ['valueVi', 'valueEn'] },
-                        { model: db.Markdown, attributes: ['description', 'contentHTML', 'contentMarkdown'] }
+                        { model: db.Markdown, attributes: ['description', 'contentHTML', 'contentMarkdown'] },
+                        {
+                            model: db.Doctor_Infor,
+                            attributes: {
+                                exclude: ['createdAt', 'updatedAt', 'id', 'doctorId']
+                            },
+                            include: [
+                                { model: db.Allcode, as: 'priceData', attributes: ['valueVi', 'valueEn'] },
+                                { model: db.Allcode, as: 'paymentData', attributes: ['valueVi', 'valueEn'] },
+                                { model: db.Allcode, as: 'provinceData', attributes: ['valueVi', 'valueEn'] },
+                            ]
+                        }
                     ],
                     attributes: {
                         exclude: ['password']
