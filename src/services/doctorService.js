@@ -1,5 +1,5 @@
 import db from "../models";
-import _, { reject } from 'lodash';
+import _ from 'lodash';
 require('dotenv').config();
 
 const MAX_SCHEDULE_NUMBER = process.env.MAX_SCHEDULE_NUMBER;
