@@ -18,21 +18,49 @@ let sendSimpleEmail = async (data) => {
         from: '"DVH 👻" <dvh31502@gmail.com>', // sender address
         to: data.receiverEmail, // list of receivers
         subject: "Thông tin đặt lịch khám bệnh", // Subject line
-        html: `
-            <h3>Xin chào ${data.patientName}!</h3>
-            <p>Bạn nhận được email này vì đã đặt lịch online trên web chúng tôi</p>
-            <p>Thông tin đặt lịch khám bệnh</p>
-            <div>
-                <b>Thời gian khám : ${data.time}</b>
-            </div>
-            <div>
-            <b>Bác sĩ khám : ${data.doctorName}</b>
-            </div>
-            <p>Nếu thông tin đúng <vui lòng click vào đường link để xác nhận và hoàn tất thủ tục đặt lịch/p>
-            <div><a href=${data.redirectLink} target="_blank">Click here</a></div>
-            <div>Chân thành cảm ơn</div>
-        `, // html body
+        html: getBodyHTMLEmail(data), // html body
     });
+}
+
+let getBodyHTMLEmail = (data) => {
+    let result = '';
+    if (data.language === 'en') {
+        result = `
+        <h3>Dear ${data.patientName}!</h3>
+        <p>You received this email because you made an online appointment on our website</p>
+        <p>
+        Information to book a medical appointment
+        </p>
+        <div>
+            <b>Time : ${data.time}</b>
+        </div>
+        <div>
+        <b>Doctor : ${data.doctorName}</b>
+        </div>
+        <p>
+        If the information is correct please click on the link to confirm and complete the booking procedure
+        </p>
+        <div><a href=${data.redirectLink} target="_blank">Click here</a></div>
+        <div>Thank you very much</div>
+    `
+    }
+    if (data.language === 'vi') {
+        result = `
+        <h3>Xin chào ${data.patientName}!</h3>
+        <p>Bạn nhận được email này vì đã đặt lịch online trên web chúng tôi</p>
+        <p>Thông tin đặt lịch khám bệnh</p>
+        <div>
+            <b>Thời gian khám : ${data.time}</b>
+        </div>
+        <div>
+        <b>Bác sĩ khám : ${data.doctorName}</b>
+        </div>
+        <p>Nếu thông tin đúng vui lòng click vào đường link để xác nhận và hoàn tất thủ tục đặt lịch</p>
+        <div><a href=${data.redirectLink} target="_blank">Click here</a></div>
+        <div>Chân thành cảm ơn</div>
+    `
+    }
+    return result
 }
 
 module.exports = { sendSimpleEmail }
