@@ -49,4 +49,57 @@ let getAllSpecialty = () => {
     })
 }
 
-module.exports = { createNewSpecialtyService, getAllSpecialty }
+let getDetailSpecialtyById = (id, location) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            if (!id || !location) {
+                resolve({
+                    errCode: 1,
+                    errMessage: "Missing parameters!"
+                })
+            } else {
+                let data = {}
+                data = await db.Specialty.findOne({
+                    where: { id: id },
+                    include: [
+                        { model: db.Markdown, attributes: ['contentHTML', 'contentMarkdown'] },
+                    ],
+                    raw: true,
+                    nest: true
+                })
+                if (data) {
+                    if (data.image) {
+                        data.image = new Buffer.from(data.image, 'base64').toString('binary');
+                    }
+                    let doctorSpecialty = [];
+                    if (location == 'ALL') {
+                        doctorSpecialty = await db.Doctor_Infor.findAll({
+                            where: { specialtyId: id },
+                            attributes: ['doctorId', 'provinceId']
+                        })
+                    } else {
+                        doctorSpecialty = await db.Doctor_Infor.findAll({
+                            where: {
+                                specialtyId: id,
+                                provinceId: location
+                            },
+                            attributes: ['doctorId', 'provinceId']
+                        })
+                    }
+                    data.doctorSpecialty = doctorSpecialty;
+                } else {
+                    data = {}
+                }
+
+                resolve({
+                    errCode: 0,
+                    data: data
+                })
+            }
+        } catch (error) {
+            reject(error)
+        }
+    })
+}
+
+module.exports = { createNewSpecialtyService, getAllSpecialty, getDetailSpecialtyById }
