@@ -71,7 +71,7 @@ let saveInforDoctorService = (data) => {
     return new Promise(async (resolve, reject) => {
         try {
             let arr = ['doctorId', 'contentHTML', 'contentMarkdown', 'action', 'selectPrice', 'selectPayment',
-                'selectProvince', 'addressClinic', 'note', 'specialtyId'];
+                'selectProvince', 'addressClinic', 'note', 'specialtyId', 'clinicId'];
             let checkObj = checkRequiredFields(data, arr);
             if (!checkObj.isValid) {
                 resolve({
