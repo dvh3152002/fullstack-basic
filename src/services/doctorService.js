@@ -1,5 +1,5 @@
 import db from "../models";
-import _ from 'lodash';
+import _, { reject } from 'lodash';
 require('dotenv').config();
 
 const MAX_SCHEDULE_NUMBER = process.env.MAX_SCHEDULE_NUMBER;
@@ -372,6 +372,38 @@ let getProfileDoctor = (id) => {
     })
 }
 
+let getListPatientForDoctor = (id, date) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            if (!id || !date) {
+                resolve({
+                    errCode: 1,
+                    errMessage: "Missing parameter"
+                })
+            } else {
+                let data = await db.Booking.findAll({
+                    where: {
+                        statusId: 'S2',
+                        doctorId: id,
+                        date: new Date(date / 1)
+                    },
+                    include: [
+                        { model: db.User, as: 'patientData', attributes: ['email', 'gender', 'address', 'firstName'] },
+                    ],
+                    raw: false,
+                    nest: true
+                })
+                resolve({
+                    errCode: 0,
+                    data: data
+                })
+            }
+        } catch (error) {
+            reject(error)
+        }
+    })
+}
+
 module.exports = {
     getTopDoctorHome: getTopDoctorHome,
     getAllDoctors: getAllDoctors,
@@ -380,5 +412,6 @@ module.exports = {
     bulkCreateSchedule: bulkCreateSchedule,
     getDateSchedule: getDateSchedule,
     getExtraDoctorInfor: getExtraDoctorInfor,
-    getProfileDoctor: getProfileDoctor
+    getProfileDoctor: getProfileDoctor,
+    getListPatientForDoctor: getListPatientForDoctor
 }
