@@ -63,4 +63,51 @@ let getBodyHTMLEmail = (data) => {
     return result
 }
 
-module.exports = { sendSimpleEmail }
+let getBodyHTMLEmailRemedy = (data) => {
+    let result = '';
+    if (data.language === 'en') {
+        result = `
+        <h3>Dear ${data.patientName}!</h3>
+        <p>You received this email because you made an online appointment on our website</p>
+        <p>Prescription/invoice information is sent in the attached file</p>
+        <div>Thank you very much</div>
+    `
+    }
+    if (data.language === 'vi') {
+        result = `
+        <h3>Xin chào ${data.patientName}!</h3>
+        <p>Bạn nhận được email này vì đã đặt lịch online trên web chúng tôi</p>
+        <p>Thông tin đơn thuốc/ hóa đơn được gửi theo file đính kèm</p>
+        <div>Chân thành cảm ơn</div>
+    `
+    }
+    return result
+}
+
+let sendAttachment = async (data) => {
+    // create reusable transporter object using the default SMTP transport
+    let transporter = nodemailer.createTransport({
+        host: "smtp.gmail.com",
+        port: 587,
+        secure: false, // true for 465, false for other ports
+        auth: {
+            user: process.env.EMAIL_APP, // generated ethereal user
+            pass: process.env.EMAIL_APP_PASSWORD, // generated ethereal password
+        },
+    });
+
+    // send mail with defined transport object
+    let info = await transporter.sendMail({
+        from: '"DVH 👻" <dvh31502@gmail.com>', // sender address
+        to: data.email, // list of receivers
+        subject: "Thông tin đặt lịch khám bệnh", // Subject line
+        html: getBodyHTMLEmailRemedy(data), // html body
+        attachments: [{
+            filename: `remedy-${data.patientName}-${new Date().getTime()}.png`,
+            content: data.imagebase64.split("base64,")[1],
+            encoding: 'base64'
+        }]
+    });
+}
+
+module.exports = { sendSimpleEmail, sendAttachment }
